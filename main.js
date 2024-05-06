@@ -92,19 +92,20 @@ function checkAnswer(answer) {
         document.body.style.backgroundColor = 'red';
         speakBtn.style.display = 'none'; 
         nextBtn.style.display = 'inline-block';
-        nextBtn.addEventListener('click', function() {
-            document.body.style.backgroundColor = '';
-            resultDiv.textContent = '';
-            questionIndex++;
-            if (questionIndex < questions.length) {
-                showQuestion(questions[questionIndex]);
-                speakBtn.style.display = 'inline-block'; 
-                nextBtn.style.display = 'none';
-            } else {
-                document.getElementById('question').innerHTML = 'Quiz Finished!';
-            }
-        });
+      
         resultDiv.appendChild(nextBtn);
     }   
 }
 
+nextBtn.addEventListener('click', function() {
+    document.body.style.backgroundColor = '';
+    resultDiv.textContent = '';
+    questionIndex++;
+    if (questionIndex < questions.length) {
+        showQuestion(questions[questionIndex]);
+        speakBtn.style.display = 'inline-block'; 
+        nextBtn.style.display = 'none';
+    } else {
+        document.getElementById('question').innerHTML = 'Quiz Finished!';
+    }
+});
