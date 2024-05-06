@@ -6,7 +6,7 @@ body{
     text-align: center;
 }
 
-#startButton{
+button{
     background-color: darkseagreen;
     border: none;
     color: white;
@@ -20,10 +20,21 @@ body{
     border-radius: 20px;
 }
 
+#nextBtn{
+    background-color: rgb(170, 8, 8);
+    display: none;
+}
+
 .container{
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100vh;
+}
+
+#result{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
