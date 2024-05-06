@@ -11,12 +11,17 @@ let questions = [
 
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
 
-const speakBtn = document.querySelector('#startButton');
+const startBtn = document.getElementById('startButton');
+const speakBtn = document.querySelector('#answerBtn');
 const resultDiv = document.querySelector("#result"); 
 const nextBtn = document.querySelector('#nextBtn');
 
-const recognition = new SpeechRecognition();
-recognition.lang = 'en-US';
+let recognition;
+
+startBtn.addEventListener('click', function() {
+    startQuiz();
+    startBtn.style.display = 'none'; 
+});
 
 recognition.onresult = function (event) {
     const transcript = event.results[0][0].transcript.trim().toLowerCase(); 
@@ -38,6 +43,24 @@ function showQuestion(questionObj) {
 }
 
 function startQuiz() {
+    recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+
+    speakBtn.style.display = 'inline-block'; 
+
+    recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript.trim().toLowerCase(); 
+        console.log(transcript);
+        resultDiv.innerHTML += transcript + "<br>";
+        checkAnswer(transcript);
+        speakBtn.disabled = false;
+    }
+
+    speakBtn.addEventListener("click", function () {
+        recognition.start();
+        speakBtn.disabled = true;
+    });
+
     showQuestion(questions[questionIndex]);
 }
 
