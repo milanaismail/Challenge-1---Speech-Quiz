@@ -23,26 +23,17 @@ startBtn.addEventListener('click', function() {
     startBtn.style.display = 'none'; 
 });
 
-recognition.onresult = function (event) {
-    const transcript = event.results[0][0].transcript.trim().toLowerCase(); 
-    console.log(transcript);
-    resultDiv.innerHTML += transcript + "<br>";
-    checkAnswer(transcript);
-    speakBtn.disabled = false;
-}
-
-  
-speakBtn.addEventListener("click", function () {
-    recognition.start();
-    speakBtn.disabled = true;
-});
-
 function showQuestion(questionObj) {
     document.getElementById('question').innerHTML = questionObj.question;
     speakQuestion(questionObj.question); // Call speakQuestion to read out the question
 }
 
 function startQuiz() {
+    if (recognition) {
+        recognition.abort(); // Stop the previous recognition if it's in progress
+        recognition.onresult = null; // Remove the previous onresult event handler
+    }
+    
     recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
 
@@ -53,17 +44,15 @@ function startQuiz() {
         console.log(transcript);
         resultDiv.innerHTML += transcript + "<br>";
         checkAnswer(transcript);
-        speakBtn.disabled = false;
     }
-
-    speakBtn.addEventListener("click", function () {
-        recognition.start();
-        speakBtn.disabled = true;
-    });
 
     showQuestion(questions[questionIndex]);
 }
 
+speakBtn.addEventListener("click", function () {
+    recognition.start();
+
+});
 
 function speakQuestion(question) {
     console.log("Speaking question:", question); // Log the question being spoken
@@ -90,9 +79,9 @@ function checkAnswer(answer) {
                 document.body.style.backgroundColor = ''; 
                 speakBtn.style.display = 'inline-block'; 
                 resultDiv.textContent = '';
-                nextBtn.style.display = 'none'; 
             }, 2000);
         } else {
+
             resultDiv.textContent = 'Quiz Finished!';
         }
     } else {
@@ -112,11 +101,10 @@ function checkAnswer(answer) {
                 speakBtn.style.display = 'inline-block'; 
                 nextBtn.style.display = 'none';
             } else {
-                resultDiv.textContent = 'Quiz Finished!';
+                document.getElementById('question').innerHTML = 'Quiz Finished!';
             }
         });
         resultDiv.appendChild(nextBtn);
     }   
 }
 
-startQuiz();
