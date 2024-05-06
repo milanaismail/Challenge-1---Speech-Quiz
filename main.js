@@ -16,6 +16,9 @@ const speakBtn = document.querySelector('#answerBtn');
 const resultDiv = document.querySelector("#result"); 
 const nextBtn = document.querySelector('#nextBtn');
 
+let correctAnswers = 0;
+let totalQuestions = questions.length;
+
 let recognition;
 
 startBtn.addEventListener('click', function() {
@@ -33,6 +36,9 @@ function startQuiz() {
         recognition.abort(); // Stop the previous recognition if it's in progress
         recognition.onresult = null; // Remove the previous onresult event handler
     }
+    correctAnswers = 0;
+    updateScore();
+
     
     recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
@@ -72,6 +78,7 @@ function checkAnswer(answer) {
         resultDiv.textContent = 'Correct! The answer was: ' + currentQuestion.answer;
         document.body.style.backgroundColor = 'green';
         speakBtn.style.display = 'none'; 
+        correctAnswers++;
         questionIndex++;
         if (questionIndex < questions.length) {
             setTimeout(function() {
@@ -80,6 +87,8 @@ function checkAnswer(answer) {
                 speakBtn.style.display = 'inline-block'; 
                 resultDiv.textContent = '';
             }, 2000);
+            updateScore();
+
         } else {
 
             resultDiv.textContent = 'Quiz Finished!';
@@ -109,3 +118,7 @@ nextBtn.addEventListener('click', function() {
         document.getElementById('question').innerHTML = 'Quiz Finished!';
     }
 });
+
+function updateScore() {
+    document.getElementById('score').textContent = `Score: ${correctAnswers} out of ${totalQuestions} questions correct`;
+}
