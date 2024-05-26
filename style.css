@@ -11,6 +11,17 @@ body{
     text-align: center;
 }
 
+#Elements{
+    width: 120px;
+    height: auto;
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+
+
 button{
     background-color: #a2e162;
     border: none;
