@@ -97,7 +97,10 @@ function checkAnswer(answer) {
             }, 2000);
             updateScore();
         } else {
-            resultDiv.textContent = 'Quiz Finished!';
+            document.body.style.backgroundColor = ''; 
+            resultDiv.style.display = 'none';
+            document.getElementById('question').innerHTML = 'Quiz Finished!';
+            timerDiv.style.display = 'none'; 
         }
     } else {
         resultDiv.innerHTML = 'Incorrect! <br> The correct answer was: ' + currentQuestion.answer;
@@ -110,7 +113,6 @@ function checkAnswer(answer) {
         resultDiv.appendChild(nextBtn);
     }   
 }
-
 nextBtn.addEventListener('click', function() {
     document.body.style.backgroundColor = '';
     resultDiv.textContent = '';
