@@ -63,3 +63,6 @@ button{
     flex-direction: column;
     align-items: center;
 }
+#startButton{
+    background-color: #EAD2FF;
+}

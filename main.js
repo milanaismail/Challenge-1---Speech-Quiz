@@ -25,10 +25,12 @@ let totalQuestions = questions.length;
 let recognition;
 let timeLeft;
 let timerInterval;
+let isRecognizing = false;  
 
 startBtn.addEventListener('click', function() {
     startQuiz();
     startBtn.style.display = 'none'; 
+    speakBtn.style.display = 'inline-block';
 });
 
 function showQuestion(questionObj) {
@@ -42,12 +44,11 @@ function startQuiz() {
         recognition.onresult = null; 
     }
     correctAnswers = 0;
+    questionIndex = 0;
     updateScore();
     
     recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
-
-    speakBtn.style.display = 'inline-block'; 
 
     recognition.onresult = function(event) {
         const transcript = event.results[0][0].transcript.trim().toLowerCase(); 
@@ -56,24 +57,44 @@ function startQuiz() {
         checkAnswer(transcript);
     }
 
+    recognition.onerror = function(event) {
+        console.error("Speech Recognition Error:", event.error);
+        resultDiv.innerHTML = "Sorry, I didn't catch that. Please try again.<br>";
+        speakBtn.style.display = 'inline-block'; 
+        isRecognizing = false; 
+    };
+
+    recognition.onend = function() {
+        console.log("Speech Recognition Ended");
+        isRecognizing = false; 
+    };
+
     showQuestion(questions[questionIndex]);
 }
 
 speakBtn.addEventListener("click", function () {
-    recognition.start();
+    if (!isRecognizing) {
+        resultDiv.innerHTML = ''; 
+        recognition.start();
+        isRecognizing = true; 
+    }
 });
 
 function speakQuestion(question) {
     console.log("Speaking question:", question); 
     const speech = new SpeechSynthesisUtterance(question);
     timerDiv.style.display = 'none';
-
+    
     speech.onstart = function(event) {
+        speakBtn.disabled = true; 
+        speakBtn.style.backgroundColor = '#a1e16288';
         console.log("Speech Synthesis Started");
     }
     speech.onend = function(event) {
         console.log("Speech Synthesis Ended");
         timerDiv.style.display = 'block'; 
+        speakBtn.disabled = false; 
+        speakBtn.style.backgroundColor = '#a2e162';
         startTimer(); 
     }
     window.speechSynthesis.speak(speech);
@@ -97,10 +118,7 @@ function checkAnswer(answer) {
             }, 2000);
             updateScore();
         } else {
-            document.body.style.backgroundColor = ''; 
-            resultDiv.style.display = 'none';
-            document.getElementById('question').innerHTML = 'Quiz Finished!';
-            timerDiv.style.display = 'none'; 
+            endQuiz(); 
         }
     } else {
         resultDiv.innerHTML = 'Incorrect! <br> The correct answer was: ' + currentQuestion.answer;
@@ -113,6 +131,7 @@ function checkAnswer(answer) {
         resultDiv.appendChild(nextBtn);
     }   
 }
+
 nextBtn.addEventListener('click', function() {
     document.body.style.backgroundColor = '';
     resultDiv.textContent = '';
@@ -122,8 +141,7 @@ nextBtn.addEventListener('click', function() {
         speakBtn.style.display = 'inline-block'; 
         nextBtn.style.display = 'none';
     } else {
-        timerDiv.style.display = 'none'; 
-        document.getElementById('question').innerHTML = 'Quiz Finished!';
+        endQuiz(); 
     }
 });
 
@@ -147,9 +165,21 @@ function startTimer() {
 }
 
 function handleTimeout() {
+    if (isRecognizing) {
+        recognition.abort(); 
+        isRecognizing = false; 
+    }
     resultDiv.innerHTML = 'Time\'s up! <br> The correct answer was: ' + questions[questionIndex].answer;
     document.body.style.backgroundColor = '#FFA2A2';
     speakBtn.style.display = 'none'; 
     nextBtn.style.display = 'inline-block';
     resultDiv.appendChild(nextBtn);
+}
+
+function endQuiz() {
+    document.body.style.backgroundColor = ''; 
+    resultDiv.style.display = 'none';
+    document.getElementById('question').innerHTML = 'Quiz Finished!';
+    timerDiv.style.display = 'none'; 
+    updateScore(); 
 }
